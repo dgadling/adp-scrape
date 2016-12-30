@@ -59,7 +59,7 @@ class PayCheckFetcher:
 
     def get_all_the_cookies(self):
         """
-        Header over to the landing page like a human. This will get us even
+        Head over to the landing page like a human. This will get us even
         more cookies that we'll end up needing later.
 
         This will fetch us some very important cookies including a Session ID
@@ -128,6 +128,10 @@ class PayCheckFetcher:
 
     @staticmethod
     def _transform_download_url(url):
+        """
+        For some reason the URLs we currently get start with `/l2` which
+        doesn't appear to be correct. Strip that out and make them full URIs.
+        """
         if not url.startswith('/l2'):
             return url
 
