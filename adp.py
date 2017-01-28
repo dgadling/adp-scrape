@@ -95,10 +95,19 @@ class PayCheckFetcher:
         response = self.session.get(self.PAYSTUB_LIST_URL, params=payload)
         info = json.loads(response.text)
 
-        self.paystub_url_by_date = {
-            statement['payDate']: statement['statementImageUri']['href']
-            for statement in info['payStatements']
-        }
+        count_by_date = {}
+        for statement in info['payStatements']:
+            pd = statement['payDate']
+            url = statement['statementImageUri']['href']
+            if pd in self.paystub_url_by_date:
+                # Ugh, this is another "paystub" for the same date. Figure out
+                # which one this should be by looking in count_by_date and
+                # acting accordingly.
+                idx = count_by_date.get(pd, 0)
+                pd = '{}-{}'.format(pd, idx)
+                count_by_date[pd] = idx + 1
+
+            self.paystub_url_by_date[pd] = url
 
     def get_needed_paystubs(self):
         """
